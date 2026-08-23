@@ -2,7 +2,10 @@ package ru.practicum.shareit.user;
 
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.exception.DuplicateEmailException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.dto.UpdateUserRequest;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,20 +31,25 @@ public class UserServiceImpl implements UserService {
 
     // Обновляет информацию о пользователе
     @Override
-    public User updateUser(User user, Long id) {
-        System.out.println("updateUser: id=" + id + " users keys=" + users.keySet());
+    public User updateUser(UpdateUserRequest updateUser, Long id) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь не найден");
         }
         boolean emailExists = users.values().stream()
                 .filter(u -> !u.getId().equals(id))
-                .anyMatch(u -> u.getEmail().equals(user.getEmail()));
+                .anyMatch(u -> u.getEmail().equals(updateUser.getEmail()));
         if (emailExists) {
             throw new DuplicateEmailException("Email уже зарегистрирован");
         }
-        user.setId(id);
-        users.put(id, user);
+        User user = users.get(id);
+        if (updateUser.hasEmail()) {
+            user.setEmail(updateUser.getEmail());
+        }
+        if (updateUser.hasName()) {
+            user.setName(updateUser.getName());
+        }
         return user;
+
     }
 
     // Получает пользователя по идентификатору
@@ -53,7 +61,10 @@ public class UserServiceImpl implements UserService {
     // Удаляет пользователя
     @Override
     public void deleteUser(Long id) {
-        System.out.println("deleteUser: id=" + id);
+        User user = users.get(id);
+        if (user == null) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         users.remove(id);
     }
 

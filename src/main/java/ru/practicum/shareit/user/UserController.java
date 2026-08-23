@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 
 // REST контроллер для управления пользователями
@@ -28,7 +29,7 @@ public class UserController {
 
     // Обновляет информацию о пользователе
     @PatchMapping("/{id}")
-    public UserDto updateUser(@RequestBody User user, @PathVariable Long id) {
+    public UserDto updateUser(@RequestBody UpdateUserRequest user, @PathVariable Long id) {
         System.out.println("updateUser called: id=" + id);
         return UserMapper.mapToDto(userService.updateUser(user,id));
     }

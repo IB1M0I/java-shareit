@@ -40,7 +40,7 @@ public class ItemController {
 
     // Обновляет информацию о вещи
     @PatchMapping("{itemId}")
-    public ItemDto updateItems(@RequestBody UpdateItemRequest item, @PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDto updateItems(@RequestBody @Valid UpdateItemRequest item, @PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
         return ItemMapper.mapToDto(itemService.updateItem(item, itemId, userId));
     }
 
