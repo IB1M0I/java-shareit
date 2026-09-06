@@ -5,10 +5,12 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-// DTO для запроса на бронирование вещи
+// DTO для передачи данных о запросе на вещь
 @Data
 public class ItemRequestDto {
-    // Описание запроса
+    // Уникальный идентификатор запроса
+    private Long id;
+    // Описание запрашиваемой вещи
     private String description;
     // Пользователь, создавший запрос
     private User requester;

@@ -4,7 +4,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 // Маппер для преобразования сущности User в DTO
 public class UserMapper {
-    // Преобразует сущность User в DTO
+    // Преобразует сущность User в UserDto
     public static UserDto mapToDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
