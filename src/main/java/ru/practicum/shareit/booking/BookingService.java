@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapperDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.exception.ForbiddenException;
@@ -19,6 +21,7 @@ import java.util.List;
 // Сервис для работы с бронированиями вещей
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingService {
     // Репозиторий для работы с бронированиями
     private final BookingRepository bookingRepository;
@@ -28,6 +31,7 @@ public class BookingService {
     private final UserRepository userRepository;
 
     // Создает новое бронирование вещи
+    @Transactional
     public Booking addBooking(NewBookingDto newBooking, Long userId) {
         Item item = itemRepository.findById(newBooking.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
@@ -54,8 +58,9 @@ public class BookingService {
     }
 
     // Подтверждает или отклоняет бронирование (только владелец вещи)
+    @Transactional
     public Booking approvedBooking(Long userId, Long bookingId, boolean approved) {
-        Booking booking = bookingRepository.findByIdWithItem(bookingId).orElseThrow(() -> new RuntimeException("Бронирование не найдено"));
+        Booking booking = bookingRepository.findByIdWithItem(bookingId).orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
         Item item = booking.getItem();
 
         if (userId.equals(item.getOwner().getId())) {
@@ -79,7 +84,7 @@ public class BookingService {
         if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
             return booking;
         }
-        throw new RuntimeException("Нет доступа к бронированию");
+        throw new ForbiddenException("Нет доступа к бронированию");
     }
 
     // Получает все бронирования пользователя с фильтрацией по состоянию

@@ -2,9 +2,11 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingMapperDto;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -20,10 +22,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 // Реализация сервиса для работы с вещами
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     // Репозиторий для работы с вещами
     private final ItemRepository itemRepository;
@@ -35,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     // Добавляет новую вещь в базу данных
+    @Transactional
     @Override
     public Item addItem(Item item, Long userId) {
         User user = userRepository.findById(userId)
@@ -56,6 +62,7 @@ public class ItemServiceImpl implements ItemService {
 
     // Обновляет информацию о вещи
     @Override
+    @Transactional
     public Item updateItem(UpdateItemRequest updateItem, Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
@@ -101,6 +108,7 @@ public class ItemServiceImpl implements ItemService {
 
     // Удаляет вещь из базы данных
     @Override
+    @Transactional
     public void deleteItem(Long id) {
         if (!itemRepository.existsById(id)) {
             throw new NotFoundException("Предмет не найден");
@@ -118,32 +126,50 @@ public class ItemServiceImpl implements ItemService {
 
     // Получает вещи владельца с информацией о бронированиях
     public List<ItemDto> getOwnerItems(Long userId) {
-        Collection<Item> items = itemRepository.findByOwnerId(userId);
+        // 1. Получаем все вещи владельца (1 запрос)
+        List<Item> items = itemRepository.findByOwnerId(userId);
 
+        if (items.isEmpty()) {
+            return List.of();
+        }
+
+        // 2. Собираем все ID вещей
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .toList();
+
+        // 3. Получаем ВСЕ бронирования для этих вещей ОДНИМ запросом
+        List<Booking> allBookings = bookingRepository.findByItemIdIn(itemIds);
+
+        // 4. Группируем бронирования по itemId в Map (в памяти)
+        Map<Long, List<Booking>> bookingsByItem = allBookings.stream()
+                .collect(Collectors.groupingBy(b -> b.getItem().getId()));
+
+        // 5. Преобразуем вещи в DTO, используя уже загруженные бронирования
         return items.stream()
                 .map(item -> {
                     ItemDto dto = ItemMapper.mapToDto(item);
 
-                    // Находим все бронирования этой вещи
-                    List<Booking> bookings = bookingRepository.findByItemId(item.getId());
+                    List<Booking> itemBookings = bookingsByItem.getOrDefault(item.getId(), List.of());
 
                     // Последнее бронирование (start <= сейчас)
-                    Booking last = bookings.stream()
-                            .filter(b -> b.getStart().isBefore(LocalDateTime.now()) ||
-                                    b.getStart().isEqual(LocalDateTime.now()))
+                    BookingShortDto lastBooking = itemBookings.stream()
+                            .filter(b -> !b.getStart().isAfter(LocalDateTime.now()))
                             .sorted(Comparator.comparing(Booking::getStart).reversed())
                             .findFirst()
+                            .map(BookingMapper::mapToBookingShort)
                             .orElse(null);
 
                     // Ближайшее будущее (start > сейчас)
-                    Booking next = bookings.stream()
+                    BookingShortDto nextBooking = itemBookings.stream()
                             .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
                             .sorted(Comparator.comparing(Booking::getStart))
                             .findFirst()
+                            .map(BookingMapper::mapToBookingShort)
                             .orElse(null);
 
-                    dto.setLastBooking(last != null ? BookingMapperDto.toBookingShortDto(last) : null);
-                    dto.setNextBooking(next != null ? BookingMapperDto.toBookingShortDto(next) : null);
+                    dto.setLastBooking(lastBooking);
+                    dto.setNextBooking(nextBooking);
 
                     return dto;
                 })
@@ -151,6 +177,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     // Добавляет комментарий к вещи (проверяет наличие завершенного бронирования)
+    @Transactional
     public CommentDto addComment(Long itemId, Long userId, NewCommentDto newComment) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));

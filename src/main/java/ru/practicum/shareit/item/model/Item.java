@@ -3,14 +3,17 @@ package ru.practicum.shareit.item.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.util.Collection;
 
 // Сущность вещи для аренды
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "items")
 public class Item {
@@ -22,6 +25,7 @@ public class Item {
     @NotNull(message = "Название не может быть пустым")
     @NotBlank(message = "Название не может быть пустым")
     @Column(name = "name")
+    @EqualsAndHashCode.Include
     private String name;
     // Описание вещи
     @NotNull(message = "Описание не может быть пустым")
@@ -34,6 +38,7 @@ public class Item {
     // Владелец вещи (ссылка на пользователя)
     @ManyToOne
     @JoinColumn(name = "owner_id")
+    @EqualsAndHashCode.Include
     private User owner;
     // Запрос на бронирование вещи (опционально)
     @ManyToOne

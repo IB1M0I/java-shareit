@@ -56,6 +56,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Получает все бронирования вещи
     List<Booking> findByItemId(Long itemId);
 
+    @Query("SELECT b FROM Booking b WHERE b.item.id IN :itemIds")
+    List<Booking> findByItemIdIn(@Param("itemIds") List<Long> itemIds);
+
     // Проверяет наличие завершенного бронирования вещи пользователем
     @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE b.item.id = :itemId AND b.booker.id = :bookerId AND b.end < :now")
     boolean existsByItemIdAndBookerIdAndEndBefore(

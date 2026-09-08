@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UpdateUserRequest;
@@ -10,12 +11,14 @@ import ru.practicum.shareit.user.dto.UpdateUserRequest;
 // Реализация сервиса для работы с пользователями
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     // Репозиторий для работы с пользователями
     private final UserRepository userRepository;
 
     // Добавляет нового пользователя в базу данных
     @Override
+    @Transactional
     public User addUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new DuplicateEmailException("Email уже зарегистрирован");
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
 
     // Обновляет информацию о пользователе
     @Override
+    @Transactional
     public User updateUser(UpdateUserRequest updateUser, Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
@@ -51,6 +55,7 @@ public class UserServiceImpl implements UserService {
 
     // Удаляет пользователя из базы данных
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("Пользователь не найден");
@@ -59,11 +64,5 @@ public class UserServiceImpl implements UserService {
     }
 }
 
-//    // Генерирует уникальный идентификатор для пользователя
-//    private long generateId() {
-//        return users.keySet().stream()
-//                .mapToLong(Long::longValue)
-//                .max()
-//                .orElse(0L) + 1;
-//    }
+
 

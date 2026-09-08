@@ -1,12 +1,17 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-@Data
+// Сущность комментария к вещи
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -20,12 +25,15 @@ public class Comment {
     // Автор комментария (ссылка на пользователя)
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Include
     private User author;
     // Вещь, к которой оставлен комментарий
     @ManyToOne
     @JoinColumn(name = "item_id")
+    @EqualsAndHashCode.Include
     private Item item;
     // Дата и время создания комментария
     @Column(name = "created")
+    @EqualsAndHashCode.Include
     private LocalDateTime created;
 }
