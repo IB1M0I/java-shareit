@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 // Маппер для преобразования сущности Item в DTO
 public class ItemMapper {
 
-    // Преобразует сущность Item в DTO
+    // Преобразует сущность Item в ItemDto
     public static ItemDto mapToDto(Item item) {
         ItemDto itemDto = new ItemDto();
         itemDto.setId(item.getId());
@@ -18,7 +18,9 @@ public class ItemMapper {
         if (item.getRequest() != null) {
             itemDto.setRequest(item.getRequest());
         }
-
+        if (item.getComments() != null) {
+            itemDto.setComments(CommentMapper.mapToDto(item.getComments()));
+        }
         return itemDto;
     }
 

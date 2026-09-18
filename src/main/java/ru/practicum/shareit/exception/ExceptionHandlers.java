@@ -31,5 +31,12 @@ public class ExceptionHandlers {
     public Map<String, String> handleValidationException(final ValidationException e) {
         return Map.of("error", e.getMessage());
     }
+
+    // Обрабатывает исключение отсутствия прав доступа
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public  Map<String, String> handleForbiddenException(final ForbiddenException e) {
+        return Map.of("error", e.getMessage());
+    }
 }
 

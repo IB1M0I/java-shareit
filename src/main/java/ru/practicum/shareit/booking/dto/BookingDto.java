@@ -6,13 +6,17 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-// DTO для бронирования вещи
+// DTO для передачи данных о бронировании
 @Data
 public class BookingDto {
+    // Уникальный идентификатор бронирования
+    private Long id;
     // Дата и время начала аренды
     private LocalDateTime start;
     // Дата и время окончания аренды
     private LocalDateTime end;
+    // Статус бронирования
+    private String status;
     // Арендуемая вещь
     private Item item;
     // Пользователь, бронирующий вещь

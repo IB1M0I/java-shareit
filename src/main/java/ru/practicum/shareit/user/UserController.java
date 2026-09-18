@@ -30,7 +30,6 @@ public class UserController {
     // Обновляет информацию о пользователе
     @PatchMapping("/{id}")
     public UserDto updateUser(@RequestBody UpdateUserRequest user, @PathVariable Long id) {
-        System.out.println("updateUser called: id=" + id);
         return UserMapper.mapToDto(userService.updateUser(user,id));
     }
 
