@@ -1,9 +1,11 @@
-package ru.practicum.shareit.request.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 // DTO для передачи данных о запросе на вещь
 @Data
@@ -13,7 +15,9 @@ public class ItemRequestDto {
     // Описание запрашиваемой вещи
     private String description;
     // Пользователь, создавший запрос
-    private User requester;
+    private Long userId;
     // Дата и время создания запроса
     private LocalDateTime created;
+    // Список вещей, предложенных в ответ на запрос
+    private List<ItemShortDto> items;
 }

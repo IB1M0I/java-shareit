@@ -40,7 +40,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     @EqualsAndHashCode.Include
     private User owner;
-    // Запрос на бронирование вещи (опционально)
+    // Запрос на бронирование вещи
     @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request;

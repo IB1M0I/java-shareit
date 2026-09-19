@@ -3,10 +3,7 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewCommentDto;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -22,8 +19,8 @@ public class ItemController {
 
     // Добавляет новую вещь
     @PostMapping
-    public ItemDto addItem(@RequestBody @Valid Item item, @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return ItemMapper.mapToDto(itemService.addItem(item, userId));
+    public ItemDto addItem(@RequestBody @Valid NewItemDto newItemDto, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return ItemMapper.mapToDto(itemService.addItem(newItemDto, userId));
     }
 
     // Получает вещь по идентификатору

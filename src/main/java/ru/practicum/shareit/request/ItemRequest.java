@@ -2,12 +2,18 @@ package ru.practicum.shareit.request;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemShortDto;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 // Сущность запроса на бронирование вещи
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "requests")
 public class ItemRequest {
@@ -23,5 +29,6 @@ public class ItemRequest {
     @JoinColumn(name = "requester_id")
     private User requester;
     // Дата и время создания запроса
+    @Column(name = "created")
     private LocalDateTime created;
 }

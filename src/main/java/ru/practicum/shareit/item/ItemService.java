@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.NewCommentDto;
+import ru.practicum.shareit.item.dto.NewItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 
@@ -10,7 +11,7 @@ import java.util.Collection;
 // Интерфейс сервиса для работы с вещами
 public interface ItemService {
     // Добавляет новую вещь в базу данных
-    Item addItem(Item item, Long userId);
+    Item addItem(NewItemDto newItemDto, Long userId);
 
     // Обновляет информацию о вещи
     Item updateItem(UpdateItemRequest item, Long id, Long userId);

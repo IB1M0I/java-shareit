@@ -9,12 +9,11 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewCommentDto;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -38,26 +37,44 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     // Репозиторий для работы с комментариями
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     // Добавляет новую вещь в базу данных
     @Transactional
     @Override
-    public Item addItem(Item item, Long userId) {
+    public Item addItem(NewItemDto newItemDto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        if (item.getAvailable() == null) {
+        if (newItemDto.getAvailable() == null) {
             throw new ValidationException("Поле 'available' не может быть null");
         }
-        if (item.getName() == null || item.getName().isBlank()) {
+        if (newItemDto.getName() == null || newItemDto.getName().isBlank()) {
             throw new ValidationException("Поле 'name' не может быть null или пустым");
         }
-        if (item.getDescription() == null || item.getDescription().isBlank()) {
+        if (newItemDto.getDescription() == null || newItemDto.getDescription().isBlank()) {
             throw new ValidationException("Поле 'description' не может быть null или пустым");
         }
 
+//        item.setOwner(user);
+//        return itemRepository.save(item);
+
+
+        Item item = new Item();
+        item.setName(newItemDto.getName());
+        item.setDescription(newItemDto.getDescription());
+        item.setAvailable(newItemDto.getAvailable());
         item.setOwner(user);
-        return itemRepository.save(item);
+
+        // ✅ Если передан requestId — привязываем вещь к запросу
+        if (newItemDto.getRequestId() != null) {
+            ItemRequest request = itemRequestRepository.findById(newItemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос не найден"));
+            item.setRequest(request);
+        }
+
+        Item saved = itemRepository.save(item);
+        return saved;
     }
 
     // Обновляет информацию о вещи
