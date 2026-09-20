@@ -6,10 +6,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+// Репозиторий для работы с запросами на вещи
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
 
+    // Получает все запросы пользователя, отсортированные по дате создания
     @Query("SELECT r FROM ItemRequest r WHERE r.requester.id = :userId ORDER BY r.created DESC")
     List<ItemRequest> findAllByRequesterIdOrderByCreatedDesc(@Param("userId") Long userId);
 
+    // Получает все запросы, отсортированные по дате создания
     List<ItemRequest> findAllByOrderByCreatedDesc();
 }

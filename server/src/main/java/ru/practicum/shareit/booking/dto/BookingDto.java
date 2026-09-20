@@ -21,4 +21,5 @@ public class BookingDto {
     private Item item;
     // Пользователь, бронирующий вещь
     private User booker;
+
 }

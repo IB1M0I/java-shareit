@@ -80,7 +80,7 @@ public class BookingService {
 
     // Получает бронирование по ID (доступно для владельца вещи или бронирующего)
     public Booking getBookingId(Long bookingId, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Бронирование не найдено"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
         if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
             return booking;
         }

@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -29,7 +30,7 @@ class BookingControllerTest {
     private BookingService bookingService;
 
     @Test
-    void createBooking_ShouldReturnCreatedBooking() throws Exception {
+    void addBooking_ShouldReturnCreatedBooking() throws Exception {
         NewBookingDto dto = new NewBookingDto();
         dto.setItemId(1L);
         dto.setStart(LocalDateTime.now().plusDays(1));
@@ -50,7 +51,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void approveBooking_ShouldReturnApprovedBooking() throws Exception {
+    void approvedBooking_ShouldReturnApprovedBooking() throws Exception {
         Booking approved = new Booking();
         approved.setId(1L);
         approved.setStatus(BookingStatus.APPROVED);
@@ -62,5 +63,44 @@ class BookingControllerTest {
                         .param("approved", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("APPROVED"));
+    }
+
+    @Test
+    void getBookingId_ShouldReturnBooking() throws Exception {
+        Booking booking = new Booking();
+        booking.setId(1L);
+
+        when(bookingService.getBookingId(eq(1L), eq(1L))).thenReturn(booking);
+
+        mockMvc.perform(get("/bookings/1")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void getAllBookingBooker_ShouldReturnBookings() throws Exception {
+        Booking booking = new Booking();
+        booking.setId(1L);
+
+        when(bookingService.getAllBookingBooker(eq(1L), eq("ALL"))).thenReturn(List.of(booking));
+
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
+    }
+
+    @Test
+    void getAllBookingOwner_ShouldReturnBookings() throws Exception {
+        Booking booking = new Booking();
+        booking.setId(1L);
+
+        when(bookingService.getAllBookingOwner(eq(1L), eq("ALL"))).thenReturn(List.of(booking));
+
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
     }
 }

@@ -37,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     // Репозиторий для работы с комментариями
     private final CommentRepository commentRepository;
+    // Репозиторий для работы с запросами на вещи
     private final ItemRequestRepository itemRequestRepository;
 
     // Добавляет новую вещь в базу данных
@@ -56,17 +57,12 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Поле 'description' не может быть null или пустым");
         }
 
-//        item.setOwner(user);
-//        return itemRepository.save(item);
-
-
         Item item = new Item();
         item.setName(newItemDto.getName());
         item.setDescription(newItemDto.getDescription());
         item.setAvailable(newItemDto.getAvailable());
         item.setOwner(user);
 
-        // ✅ Если передан requestId — привязываем вещь к запросу
         if (newItemDto.getRequestId() != null) {
             ItemRequest request = itemRequestRepository.findById(newItemDto.getRequestId())
                     .orElseThrow(() -> new NotFoundException("Запрос не найден"));
@@ -143,33 +139,27 @@ public class ItemServiceImpl implements ItemService {
 
     // Получает вещи владельца с информацией о бронированиях
     public List<ItemDto> getOwnerItems(Long userId) {
-        // 1. Получаем все вещи владельца (1 запрос)
         List<Item> items = itemRepository.findByOwnerId(userId);
 
         if (items.isEmpty()) {
             return List.of();
         }
 
-        // 2. Собираем все ID вещей
         List<Long> itemIds = items.stream()
                 .map(Item::getId)
                 .toList();
 
-        // 3. Получаем ВСЕ бронирования для этих вещей ОДНИМ запросом
         List<Booking> allBookings = bookingRepository.findByItemIdIn(itemIds);
 
-        // 4. Группируем бронирования по itemId в Map (в памяти)
         Map<Long, List<Booking>> bookingsByItem = allBookings.stream()
                 .collect(Collectors.groupingBy(b -> b.getItem().getId()));
 
-        // 5. Преобразуем вещи в DTO, используя уже загруженные бронирования
         return items.stream()
                 .map(item -> {
                     ItemDto dto = ItemMapper.mapToDto(item);
 
                     List<Booking> itemBookings = bookingsByItem.getOrDefault(item.getId(), List.of());
 
-                    // Последнее бронирование (start <= сейчас)
                     BookingShortDto lastBooking = itemBookings.stream()
                             .filter(b -> !b.getStart().isAfter(LocalDateTime.now()))
                             .sorted(Comparator.comparing(Booking::getStart).reversed())
@@ -177,7 +167,6 @@ public class ItemServiceImpl implements ItemService {
                             .map(BookingMapper::mapToBookingShort)
                             .orElse(null);
 
-                    // Ближайшее будущее (start > сейчас)
                     BookingShortDto nextBooking = itemBookings.stream()
                             .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
                             .sorted(Comparator.comparing(Booking::getStart))
