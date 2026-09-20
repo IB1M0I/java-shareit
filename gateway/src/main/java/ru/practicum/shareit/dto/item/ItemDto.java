@@ -1,9 +1,9 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.dto.item;
 
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.dto.booking.BookingShortDto;
+import ru.practicum.shareit.dto.request.ItemRequest;
+import ru.practicum.shareit.dto.user.User;
 
 import java.util.Collection;
 
@@ -19,9 +19,9 @@ public class ItemDto {
     // Доступность вещи для аренды
     private Boolean available;
     // Владелец вещи
-    private UserDto owner;
+    private User owner;
     // Запрос на бронирование вещи
-    private ItemRequestDto request;
+    private ItemRequest request;
     // Комментарии к вещи
     private Collection<CommentDto> comments;
     // Последнее завершенное бронирование

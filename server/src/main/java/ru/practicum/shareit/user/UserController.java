@@ -29,7 +29,7 @@ public class UserController {
     // Обновляет информацию о пользователе
     @PatchMapping("/{id}")
     public UserDto updateUser(@RequestBody UpdateUserRequest user, @PathVariable Long id) {
-        return UserMapper.mapToDto(userService.updateUser(user,id));
+        return UserMapper.mapToDto(userService.updateUser(user, id));
     }
 
     // Удаляет пользователя

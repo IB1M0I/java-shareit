@@ -25,6 +25,7 @@ class BookingMapperTest {
         booking.setItem(item);
         booking.setStart(LocalDateTime.now());
         booking.setEnd(LocalDateTime.now().plusDays(1));
+        booking.setStatus(BookingStatus.WAITING);
 
         BookingDto dto = BookingMapper.mapToBooking(booking);
 

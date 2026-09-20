@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.client.ItemRequestClient;
+import ru.practicum.shareit.dto.request.ItemRequestDto;
 import ru.practicum.shareit.dto.request.NewItemRequestDto;
 
 
@@ -20,8 +21,8 @@ public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
     @PostMapping
-    public ResponseEntity<Object> createRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @Valid @RequestBody NewItemRequestDto dto) {
+    public ResponseEntity<ItemRequestDto> createRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                        @Valid @RequestBody NewItemRequestDto dto) {
         log.info("Creating request: {} by user {}", dto, userId);
         return itemRequestClient.createRequest(userId, dto);
     }
@@ -39,8 +40,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @PathVariable Long requestId) {
+    public ResponseEntity<ItemRequestDto> getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                         @PathVariable Long requestId) {
         log.info("Getting request {} by user {}", requestId, userId);
         return itemRequestClient.getRequestById(userId, requestId);
     }

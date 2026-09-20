@@ -18,8 +18,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "LOWER(i.description) LIKE LOWER(CONCAT('%', :text, '%')))")
     List<Item> searchItems(@Param("text") String text);
 
-    // Получает вещи по ID запроса
-    List<Item> findByRequestId(Long requestId);
+    // Получает вещи по ID запроса с загрузкой владельца
+    @Query("SELECT i FROM Item i LEFT JOIN FETCH i.owner WHERE i.request.id = :requestId")
+    List<Item> findByRequestId(@Param("requestId") Long requestId);
 
     // Получает вещи по списку ID запросов
     List<Item> findByRequestIdIn(List<Long> requestIds);

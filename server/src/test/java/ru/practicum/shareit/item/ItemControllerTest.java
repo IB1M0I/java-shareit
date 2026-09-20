@@ -8,10 +8,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewCommentDto;
 import ru.practicum.shareit.item.dto.NewItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
@@ -32,6 +34,9 @@ class ItemControllerTest {
     @MockBean
     private ItemService itemService;
 
+    @MockBean
+    private ru.practicum.shareit.user.UserRepository userRepository;
+
     @Test
     void addItem_ShouldReturnCreatedItem() throws Exception {
         NewItemDto dto = new NewItemDto();
@@ -39,9 +44,15 @@ class ItemControllerTest {
         dto.setDescription("Desc");
         dto.setAvailable(true);
 
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Test User");
+        owner.setEmail("test@test.com");
+
         Item saved = new Item();
         saved.setId(1L);
         saved.setName("Test");
+        saved.setOwner(owner);
 
         when(itemService.addItem(any(NewItemDto.class), eq(1L))).thenReturn(saved);
 
@@ -55,9 +66,15 @@ class ItemControllerTest {
 
     @Test
     void getItem_ShouldReturnItem() throws Exception {
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Test User");
+        owner.setEmail("test@test.com");
+
         Item item = new Item();
         item.setId(1L);
         item.setName("Test");
+        item.setOwner(owner);
 
         when(itemService.getItem(1L)).thenReturn(item);
 
@@ -68,10 +85,10 @@ class ItemControllerTest {
 
     @Test
     void getItems_ShouldReturnUserItems() throws Exception {
-        Item item = new Item();
-        item.setId(1L);
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(1L);
 
-        when(itemService.getItems(1L)).thenReturn(List.of(item));
+        when(itemService.getOwnerItems(1L)).thenReturn(List.of(itemDto));
 
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1))
@@ -84,9 +101,15 @@ class ItemControllerTest {
         UpdateItemRequest request = new UpdateItemRequest();
         request.setName("Updated");
 
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Test User");
+        owner.setEmail("test@test.com");
+
         Item updated = new Item();
         updated.setId(1L);
         updated.setName("Updated");
+        updated.setOwner(owner);
 
         when(itemService.updateItem(any(UpdateItemRequest.class), eq(1L), eq(1L))).thenReturn(updated);
 
@@ -100,8 +123,14 @@ class ItemControllerTest {
 
     @Test
     void searchItem_ShouldReturnMatchingItems() throws Exception {
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("Test User");
+        owner.setEmail("test@test.com");
+
         Item item = new Item();
         item.setId(1L);
+        item.setOwner(owner);
 
         when(itemService.searchItem("test")).thenReturn(List.of(item));
 

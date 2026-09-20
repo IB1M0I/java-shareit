@@ -6,10 +6,13 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.dto.item.CommentDto;
+import ru.practicum.shareit.dto.item.ItemDto;
+import ru.practicum.shareit.dto.item.NewItemDto;
 
 import java.util.Map;
 
+// Клиент для работы с вещами через API
 @Service
 public class ItemClient extends BaseClient {
     private static final String API_PREFIX = "/items";
@@ -24,26 +27,26 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> getItems(Long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of("from", from, "size", size);
-        return get("?from={from}&size={size}", userId, parameters);
+        return get("?from={from}&size={size}", userId, parameters, Object.class);
     }
 
-    public ResponseEntity<Object> getItemById(Long itemId) {
-        return get("/" + itemId);
+    public ResponseEntity<ItemDto> getItemById(Long itemId) {
+        return get("/" + itemId, null, null, ItemDto.class);
     }
 
-    public ResponseEntity<Object> createItem(Long userId, Object body) {
-        return post("", userId, body);
+    public ResponseEntity<ItemDto> createItem(Long userId, NewItemDto body) {
+        return post("", userId, null, body, ItemDto.class);
     }
 
-    public ResponseEntity<Object> updateItem(Long userId, Long itemId, Object body) {
-        return patch("/" + itemId, userId, body);
+    public ResponseEntity<ItemDto> updateItem(Long userId, Long itemId, NewItemDto body) {
+        return patch("/" + itemId, userId, null, body, ItemDto.class);
     }
 
     public ResponseEntity<Object> searchItems(String text) {
-        return get("/search?text={text}", null, Map.of("text", text));
+        return get("/search?text={text}", null, Map.of("text", text), Object.class);
     }
 
-    public ResponseEntity<Object> addComment(Long userId, Long itemId, Object body) {
-        return post("/" + itemId + "/comment", userId, body);
+    public ResponseEntity<CommentDto> addComment(Long userId, Long itemId, Object body) {
+        return post("/" + itemId + "/comment", userId, null, body, CommentDto.class);
     }
 }

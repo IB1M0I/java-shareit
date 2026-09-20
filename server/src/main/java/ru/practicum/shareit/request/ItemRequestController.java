@@ -3,10 +3,9 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.NewItemRequestDto;
-
-import java.util.List;
 
 // REST контроллер для управления запросами на вещи
 @RestController
@@ -15,27 +14,28 @@ import java.util.List;
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
+    private final ItemRepository itemRepository;
 
     // Создает новый запрос на вещь
     @PostMapping
     public ItemRequestDto addItemRequest(@RequestBody NewItemRequestDto newItemRequest,
                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return ItemRequestMapper.mapToDto(itemRequestService.addItemRequest(newItemRequest, userId));
+        return ItemRequestMapper.mapToDtoWithItems(itemRequestService.addItemRequest(newItemRequest, userId), itemRepository);
     }
 
     // Получает все запросы пользователя
     @GetMapping
-    public List<ItemRequestDto> getItemRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    java.util.List<ItemRequestDto> getItemRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestService.getItemRequestItem(userId).stream()
-                .map(ItemRequestMapper::mapToDto)
+                .map(request -> ItemRequestMapper.mapToDtoWithItems(request, itemRepository))
                 .toList();
     }
 
     // Получает все запросы на вещи
     @GetMapping("/all")
-    public List<ItemRequestDto> getItemRequestAll() {
+    java.util.List<ItemRequestDto> getItemRequestAll() {
         return itemRequestService.getItemRequestItemAll().stream()
-                .map(ItemRequestMapper::mapToDto)
+                .map(request -> ItemRequestMapper.mapToDtoWithItems(request, itemRepository))
                 .toList();
     }
 

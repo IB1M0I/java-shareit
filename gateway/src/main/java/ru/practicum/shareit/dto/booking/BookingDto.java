@@ -1,15 +1,12 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.dto.booking;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import ru.practicum.shareit.dto.user.User;
 
 import java.time.LocalDateTime;
 
 // DTO для передачи данных о бронировании
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class BookingDto {
     // Уникальный идентификатор бронирования
     private Long id;
@@ -22,22 +19,5 @@ public class BookingDto {
     // Арендуемая вещь
     private Item item;
     // Пользователь, бронирующий вещь
-    private Booker booker;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Item {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Booker {
-        private Long id;
-        private String name;
-        private String email;
-    }
+    private User booker;
 }

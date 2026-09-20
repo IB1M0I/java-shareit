@@ -35,7 +35,7 @@ public class ExceptionHandlers {
     // Обрабатывает исключение отсутствия прав доступа
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public  Map<String, String> handleForbiddenException(final ForbiddenException e) {
+    public Map<String, String> handleForbiddenException(final ForbiddenException e) {
         return Map.of("error", e.getMessage());
     }
 }

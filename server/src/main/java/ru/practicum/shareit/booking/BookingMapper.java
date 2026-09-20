@@ -9,10 +9,20 @@ public class BookingMapper {
     public static BookingDto mapToBooking(Booking booking) {
         BookingDto bookingDto = new BookingDto();
         bookingDto.setId(booking.getId());
-        bookingDto.setBooker(booking.getBooker());
-        bookingDto.setItem(booking.getItem());
+        BookingDto.Booker booker = new BookingDto.Booker(
+                booking.getBooker().getId(),
+                booking.getBooker().getName(),
+                booking.getBooker().getEmail()
+        );
+        bookingDto.setBooker(booker);
+        BookingDto.Item item = new BookingDto.Item(
+                booking.getItem().getId(),
+                booking.getItem().getName()
+        );
+        bookingDto.setItem(item);
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
+        bookingDto.setStatus(booking.getStatus().name());
 
         return bookingDto;
     }

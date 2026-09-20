@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
-import java.util.Collection;
+import java.util.List;
 
 
 // REST контроллер для управления вещами
@@ -27,12 +27,10 @@ public class ItemController {
         return ItemMapper.mapToDto(itemService.getItem(itemId));
     }
 
-    // Получает все вещи пользователя
+    // Получает все вещи пользователя с информацией о бронированиях
     @GetMapping
-    public Collection<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItems(userId).stream()
-                .map(ItemMapper::mapToDto)
-                .toList();
+    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getOwnerItems(userId);
     }
 
     // Обновляет информацию о вещи
@@ -43,7 +41,7 @@ public class ItemController {
 
     // Ищет вещи по тексту в названии или описании
     @GetMapping("/search")
-    public Collection<ItemDto> searchItem(@RequestParam String text) {
+    public List<ItemDto> searchItem(@RequestParam String text) {
         return itemService.searchItem(text).stream().map(ItemMapper::mapToDto).toList();
     }
 

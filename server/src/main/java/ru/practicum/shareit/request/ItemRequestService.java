@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemShortDto;
 import ru.practicum.shareit.request.dto.NewItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -49,26 +47,6 @@ public class ItemRequestService {
         ItemRequest request = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запрос не найден"));
 
-        List<Item> items = itemRepository.findByRequestId(requestId);
-
-        ItemRequestDto dto = new ItemRequestDto();
-        dto.setId(request.getId());
-        dto.setDescription(request.getDescription());
-        dto.setCreated(request.getCreated());
-
-        if (request.getRequester() != null) {
-            dto.setUserId(request.getRequester().getId());
-        }
-
-        List<ItemShortDto> itemDtos = items.stream()
-                .map(item -> new ItemShortDto(
-                        item.getId(),
-                        item.getName(),
-                        item.getOwner().getId()
-                ))
-                .toList();
-
-        dto.setItems(itemDtos);
-        return dto;
+        return ItemRequestMapper.mapToDtoWithItems(request, itemRepository);
     }
 }

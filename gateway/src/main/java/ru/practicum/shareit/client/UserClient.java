@@ -6,8 +6,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.dto.user.NewUserDto;
+import ru.practicum.shareit.dto.user.UpdateUserDto;
+import ru.practicum.shareit.dto.user.UserDto;
 
+// Клиент для работы с пользователями через API
 @Service
 public class UserClient extends BaseClient {
     private static final String API_PREFIX = "/users";
@@ -21,22 +24,22 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getUsers() {
-        return get("");
+        return get("", null, null, Object.class);
     }
 
-    public ResponseEntity<Object> getUser(Long userId) {
-        return get("/" + userId);
+    public ResponseEntity<UserDto> getUser(Long userId) {
+        return get("/" + userId, null, null, UserDto.class);
     }
 
-    public ResponseEntity<Object> createUser(Object body) {
-        return post("", body);
+    public ResponseEntity<UserDto> createUser(NewUserDto body) {
+        return post("", null, null, body, UserDto.class);
     }
 
-    public ResponseEntity<Object> updateUser(Long userId, Object body) {
-        return patch("/" + userId, body);
+    public ResponseEntity<UserDto> updateUser(Long userId, UpdateUserDto body) {
+        return patch("/" + userId, null, null, body, UserDto.class);
     }
 
     public ResponseEntity<Object> deleteUser(Long userId) {
-        return delete("/" + userId);
+        return delete("/" + userId, null, null, Object.class);
     }
 }

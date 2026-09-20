@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.client.UserClient;
 import ru.practicum.shareit.dto.user.NewUserDto;
 import ru.practicum.shareit.dto.user.UpdateUserDto;
+import ru.practicum.shareit.dto.user.UserDto;
 
 
 @RestController
@@ -21,20 +22,20 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Valid @RequestBody NewUserDto dto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody NewUserDto dto) {
         log.info("Creating user: {}", dto);
         return userClient.createUser(dto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable Long userId,
-                                             @Valid @RequestBody UpdateUserDto dto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId,
+                                              @Valid @RequestBody UpdateUserDto dto) {
         log.info("Updating user {} with {}", userId, dto);
         return userClient.updateUser(userId, dto);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
         log.info("Getting user {}", userId);
         return userClient.getUser(userId);
     }
