@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewCommentDto;
 import ru.practicum.shareit.item.dto.NewItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
+import java.util.List;
 
 // Интерфейс сервиса для работы с вещами
 public interface ItemService {
@@ -30,4 +32,7 @@ public interface ItemService {
 
     // Добавляет комментарий к вещи
     CommentDto addComment(Long itemId, Long userId, NewCommentDto newComment);
+
+    // Получает вещи владельца с информацией о бронированиях
+    List<ItemDto> getOwnerItems(Long userId);
 }

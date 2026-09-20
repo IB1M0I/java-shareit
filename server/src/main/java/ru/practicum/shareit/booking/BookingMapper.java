@@ -8,6 +8,7 @@ public class BookingMapper {
     // Преобразует сущность Booking в BookingDto
     public static BookingDto mapToBooking(Booking booking) {
         BookingDto bookingDto = new BookingDto();
+        bookingDto.setId(booking.getId());
         bookingDto.setBooker(booking.getBooker());
         bookingDto.setItem(booking.getItem());
         bookingDto.setStart(booking.getStart());
